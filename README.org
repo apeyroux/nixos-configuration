@@ -1,0 +1,103 @@
+#+TITLE: Utilisation
+
+* Base install
+
+** Boot from NixOS install iso
+
+https://nixos.org/nixos/download.html
+
+** Change keyboard config.
+
+#+BEGIN_SRC sh
+loadkeys fr
+#+END_SRC
+
+** Create partition
+
+Use fdisk (man fdisk) for mbr table or gdisk (man gdisk) for gpt (efi) table.
+
+- Create 1G boot partition (partition code EF00 for efi)
+- Create 100%FREE partition for luks
+
+** Init boot partition
+
+#+BEGIN_SRC sh
+mkfs.msdos /dev/sda1 # (efi boot)
+mkfs.ext4 -Lboot /dev/sda1  # (mbr boot)
+parted /dev/sda set 1 bios_grub on # (mbr boot)
+#+END_SRC
+
+** Luks partition
+
+#+BEGIN_SRC sh
+cryptsetup luksFormat /dev/sda2
+cryptsetup luksOpen /dev/sda2 sroot
+#+END_SRC
+
+** LVM
+
+#+BEGIN_SRC sh
+pvcreate /dev/mapper/sroot
+vgcreate NixOS /dev/mapper/sroot
+lvcreate --size 2G --name swap NixOS
+lvcreate -l100%FREE --name rootfs NixOS
+mkswap -Lswap /dev/NixOS/swap
+mkfs.ext4 -Lrootfs /dev/NixOS/rootfs
+#+END_SRC
+
+** Install
+
+mk iso with https://github.com/apeyroux/nixos-iso
+
+#+BEGIN_SRC sh
+mount /dev/NixOS/rootfs /mnt
+mkdir /mnt/boot
+mount /dev/sda1 /mnt/boot
+nixos-generate-config --root /mnt
+# copy custom configuration.nix in /etc/nixos/
+nixos-install
+#+END_SRC
+
+* recovery
+
+#+BEGIN_SRC sh
+vgchange -ay NixOS
+#+END_SRC
+
+* ZFS XPS15
+
+** Make zfs install iso
+
+Follow https://github.com/apeyroux/nixos-iso
+
+** Install
+
+#+BEGIN_SRC sh
+mkfs.msdos -nEFI /dev/nvme0n1p1
+mkfs.ext4 -m 0 -L boot -j /dev/nvme0n1p2
+zpool create -f -o ashift=12 -o altroot=/mnt zroot /dev/nvme0n1p3
+zfs create -o encryption=aes-256-gcm -o keyformat=passphrase -o mountpoint=none zroot/root
+zfs create -o encryption=aes-256-gcm -o keyformat=passphrase -o mountpoint=legacy zroot/home
+zfs create -o mountpoint=legacy zroot/root/nixos
+zfs create -o mountpoint=legacy zroot/home/alex
+zfs set compression=lz4 zroot/home
+zfs set dedup=on zroot/home
+
+mount -t zfs zroot/root/nixos /mnt
+mkdir /mnt/boot
+mount /dev/nvme0n1p2 /mnt/boot/
+mkdir /mnt/boot/efi
+mount /dev/nvme0n1p1 /mnt/boot/efi/
+
+zfs create -V 16G -b $(getconf PAGESIZE) -o compression=zle -o logbias=throughput -o sync=always -o primarycache=metadata -o secondarycache=none -o com.sun:auto-snapshot=false zroot/root/swap
+
+mkswap -f /dev/zvol/zroot/root/swap
+
+nixos-generate-config --root /mnt
+
+# edit config.
+
+nixos-install
+
+sudo zfs allow -d alex create,destroy,snapshot zroot/home/alex
+#+END_SRC
