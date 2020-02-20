@@ -5,12 +5,18 @@
     hostBridge = "br0";
 
     config = { config, pkgs, ... }: {
-      networking.firewall.allowedTCPPorts = [ 25 ];
+      networking.firewall.allowedTCPPorts = [ 25 80 ];
       networking.firewall.allowPing = true;
       networking.interfaces.eth0.ipv4.addresses = [{address = "51.158.22.25"; prefixLength = 32;}];
       networking.interfaces.eth0.macAddress = "52:54:00:00:ca:bb";
       networking.defaultGateway = { address = "163.172.21.1"; interface = "eth0"; };
 
+      security.acme.certs = {
+        "mx.px.io" = {
+          email = "postmaster@px.io";
+        };
+      };
+      
       services.postfix = {
         enable = true;
         config = {
