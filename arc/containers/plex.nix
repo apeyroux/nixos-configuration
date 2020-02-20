@@ -24,10 +24,10 @@
     nixpkgs.overlays = [ 
      (self: super: {
        plexRaw = super.plexRaw.overrideAttrs (old: rec {
-         version = "1.18.5.2309-f5213a238";
+         version = "1.18.6.2368-97add474d";
          src = super.fetchurl rec {
            url = "https://downloads.plex.tv/plex-media-server-new/${version}/redhat/plexmediaserver-${version}.x86_64.rpm";
-           sha256 = "1w8v2v4i4bg3pr8rxxyc1zjkifihv1bhar7pb4dmf2qpbbcx1knw";
+           sha256 = "0d2nnvw9qpmsra6g044bz192v67igcp1mfayy4sk0j2yqgiqvcgl";
          };
         });
       })
