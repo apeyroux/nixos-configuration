@@ -19,7 +19,7 @@
         };
         hostname = "mx.px.io";
         destination = ["$myhostname" "$mydomain" "localhost" "px.io" "dev.px.io" "peyroux.io" "xn--wxa.email" "4ge.me"];
-        relayDomains = ["@px.io" "@dev.px.io" "@peyroux.io" "@xn--wxa.email" "4ge.me"];
+        relayDomains = ["@px.io" "@dev.px.io" "@peyroux.io" "@xn--wxa.email" "@4ge.me"];
         lookupMX = true;
         virtual = builtins.readFile(../secrets/postfix.virtual);
       };
