@@ -1,5 +1,5 @@
 {
-  containers.mx-px-io = {
+  containers.mx = {
     autoStart = true;
     privateNetwork = true;
     hostBridge = "br0";
