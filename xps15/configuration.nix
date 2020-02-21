@@ -20,9 +20,12 @@
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
   networking.hosts = import ./secrets/hosts.nix;
 
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "fr";
+  };
+
   i18n = {
-    consoleFont = "Lat2-Terminus16";
-    consoleKeyMap = "fr";
     defaultLocale = "fr_FR.UTF-8";
   };
 
@@ -127,8 +130,8 @@
 
   security = {
     # pam.services.login.u2fAuth = true;
-    pam.services.slim.u2fAuth = true;
-    pam.services.slimlock.u2fAuth = true;
+    # pam.services.slim.u2fAuth = true;
+    # pam.services.slimlock.u2fAuth = true;
     sudo.wheelNeedsPassword = false;
   };
 
@@ -158,7 +161,7 @@
   services.xserver.windowManager = {
     xmonad.extraPackages = p: [
       p.xmonad
-      p.taffybar
+      # p.taffybar
       p.xmobar
       p.xmonad-extras
       p.xmonad-contrib
@@ -170,8 +173,9 @@
     ];
     xmonad.enable = true;
     xmonad.enableContribAndExtras = true;
-    default = "xmonad";
   };
+
+  services.xserver.displayManager.defaultSession = "none+xmonad";
 
   environment.variables = { 
     TERM="screen-24bit"; 
@@ -186,7 +190,7 @@
     xterm.enable = false;
     # xfce.noDesktop = true;
   };
-  services.xserver.displayManager.slim.enable = true;
+  # services.xserver.displayManager.slim.enable = true;
   services.printing.enable = true;
 
   users.users.alex= {
@@ -273,7 +277,8 @@
 
   system.autoUpgrade.channel = https://nixos.org/channels/nixos-19.09;
   system.autoUpgrade.enable = true;
-  system.stateVersion = "19.09"; # Did you read the comment?
+  # system.stateVersion = "19.09"; # Did you read the comment?
+  system.stateVersion = "20.03"; # Did you read the comment?
 
 }
 
