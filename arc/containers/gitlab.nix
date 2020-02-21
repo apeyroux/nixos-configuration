@@ -39,6 +39,7 @@ in {
           default = true;
           forceSSL = true;
           enableACME = true;
+          root = "/var/www/4ge.me";
           locations."/".proxyPass = "http://unix:/var/run/gitlab/gitlab-workhorse.socket:";
           locations."/".extraConfig = ''
 proxy_read_timeout 300;

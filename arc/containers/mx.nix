@@ -4,6 +4,12 @@
     privateNetwork = true;
     hostBridge = "br0";
 
+    bindMounts."/postfix" = {
+      hostPath = "/postfix";
+      mountPoint = "/postfix";
+      isReadOnly = false;
+    };
+
     config = { config, pkgs, ... }: {
       networking.firewall.allowedTCPPorts = [ 25 80 ]; # 80 only for acme
       networking.firewall.allowPing = true;
@@ -39,6 +45,11 @@
           inet_interfaces = "all";
           smtp_use_tls = true;
           recipient_delimiter = "+";
+          smtpd_helo_restrictions = [
+            "permit_mynetworks"
+            "check_sender_access hash:/postfix/sender_checks"
+            "permit"
+          ];
         };
         hostname = "mx.px.io";
         destination = ["$myhostname" "$mydomain" "localhost" "px.io" "dev.px.io" "peyroux.io" "xn--wxa.email" "4ge.me"];
