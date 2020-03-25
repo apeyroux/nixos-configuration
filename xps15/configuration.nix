@@ -1,4 +1,6 @@
+
 { config, pkgs, ... }:
+
 
 {
   imports =
@@ -20,23 +22,25 @@
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
   networking.hosts = import ./secrets/hosts.nix;
 
-  console = {
-    font = "Lat2-Terminus16";
-    keyMap = "fr";
-  };
+  #console = {
+  #  keyMap = "fr";
+  #};
 
   i18n = {
     defaultLocale = "fr_FR.UTF-8";
+    consoleKeyMap = "fr";
   };
 
   time.timeZone = "Europe/Paris";
 
   environment.systemPackages = with pkgs; [
+    gnome3.adwaita-icon-theme
   ];
 
   programs = {
     gnupg.agent = { enable = true; enableSSHSupport = true; };
     adb.enable = true;
+    dconf.enable = true;
     bash.enableCompletion = true;
     light.enable = true;
     mtr.enable = true;
@@ -75,6 +79,7 @@
   sound.enable = true;
   sound.mediaKeys.enable = true;
 
+  powerManagement.powertop.enable = true;
   services = {
     gnome3.gnome-keyring.enable = true;
     zfs.autoSnapshot.enable = true;
@@ -83,12 +88,17 @@
     xserver.libinput.enable = true;
     dbus.socketActivated = true;
     udisks2.enable = true;
+    upower.enable = true;
     pcscd.enable = true;
     udev.packages = [ pkgs.libu2f-host pkgs.yubikey-personalization ];
     plex = {
       enable = false;
       openFirewall = true;
     };
+    # gnome
+    # services.xserver.enable = true;
+    # xserver.displayManager.gdm.enable = true;
+    # xserver.desktopManager.gnome3.enable = true;
   };
 
   krb5 = {
@@ -103,7 +113,7 @@
     libdefaults.default_realm = "KRB.LAN";
     libdefaults.dns_lookup_kdc   = "no";
     libdefaults.dns_lookup_realm = "no";
-        # The following krb5.conf variables are only for MIT Kerberos.
+    # The following krb5.conf variables are only for MIT Kerberos.
 	  libdefaults.krb4_config = "/etc/krb.conf";
 	  libdefaults.krb4_realms = "/etc/krb.realms";
 	  libdefaults.kdc_timesync = "1";
@@ -119,8 +129,8 @@
   hardware = {
     opengl.enable = true;
     u2f.enable = true;
-    # bluetooth.powerOnBoot = true;
-    # bluetooth.enable = true;
+    bluetooth.powerOnBoot = false;
+    bluetooth.enable = false;
     pulseaudio.enable = true;
     pulseaudio.package = pkgs.pulseaudioFull; # bt audio
     pulseaudio.support32Bit = true;
@@ -175,7 +185,7 @@
     xmonad.enableContribAndExtras = true;
   };
 
-  services.xserver.displayManager.defaultSession = "none+xmonad";
+  # services.xserver.displayManager.defaultSession = "none+xmonad";
 
   environment.variables = { 
     TERM="screen-24bit"; 
@@ -193,6 +203,7 @@
   # services.xserver.displayManager.slim.enable = true;
   services.printing.enable = true;
 
+  # users.defaultUserShell = pkgs.zsh;
   users.users.alex= {
     password = "alex";
     isNormalUser = true;
@@ -216,6 +227,7 @@
     docker = {
       enable = true;
       storageDriver = "zfs";
+      extraOptions = "--data-root /docker";
     };
     virtualbox.host.enable = true;
     virtualbox.host.enableExtensionPack = true;
@@ -223,26 +235,27 @@
   };
 
   # systemd.services.docker.path = pkgs.lib.mkOverride 10 ((pkgs.lib.getValue pkgs.systemd.services.docker.path) ++ [ pkgs.kmod pkgs.git pkgs.zfs ]);
-  systemd.services.docker.path = [ pkgs.kmod pkgs.git pkgs.zfs ];
+  # systemd.services.docker.path = [ pkgs.kmod pkgs.git pkgs.zfs  ];
+  systemd.services.docker.path = [ pkgs.kmod pkgs.git ];
   
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.android_sdk.accept_license = true;
-  nixpkgs.overlays = [ 
-    (self: super: {
-      appimage-run = super.appimage-run.override {
-        extraPkgs = p: with p; [
-          at-spi2-core
-        ];
-      };
-      plexRaw = super.plexRaw.overrideAttrs (old: rec {
-        version = "1.18.2.2015-5a99a9a46";
-        src = super.fetchurl rec {
-          url = "https://downloads.plex.tv/plex-media-server-new/${version}/redhat/plexmediaserver-${version}.x86_64.rpm";
-          sha256 = "0rx0fl4jwmii0wnkw1h8np6y5m120ibvcs5jq50cll1vwl80swkm";
-        };
-      });
-    })
-  ];
+  # nixpkgs.overlays = [ 
+  #   (self: super: {
+  #     appimage-run = super.appimage-run.override {
+  #       extraPkgs = p: with p; [
+  #         at-spi2-core
+  #       ];
+  #     };
+  #     plexRaw = super.plexRaw.overrideAttrs (old: rec {
+  #       version = "1.18.2.2015-5a99a9a46";
+  #       src = super.fetchurl rec {
+  #         url = "https://downloads.plex.tv/plex-media-server-new/${version}/redhat/plexmediaserver-${version}.x86_64.rpm";
+  #         sha256 = "0rx0fl4jwmii0wnkw1h8np6y5m120ibvcs5jq50cll1vwl80swkm";
+  #       };
+  #     });
+  #   })
+  # ];
 
   nix = {
     useSandbox = true;
@@ -275,7 +288,7 @@
     options = "--delete-older-than 30d";
   };
 
-  system.autoUpgrade.channel = https://nixos.org/channels/nixos-19.09;
+  system.autoUpgrade.channel = https://nixos.org/channels/nixos-20.03;
   system.autoUpgrade.enable = true;
   # system.stateVersion = "19.09"; # Did you read the comment?
   system.stateVersion = "20.03"; # Did you read the comment?
