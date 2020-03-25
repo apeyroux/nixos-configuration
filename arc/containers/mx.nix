@@ -45,6 +45,7 @@
           inet_interfaces = "all";
           smtp_use_tls = true;
           recipient_delimiter = "+";
+          message_size_limit = "0";
           smtpd_helo_restrictions = [
             "permit_mynetworks"
             "check_sender_access hash:/postfix/sender_checks"
@@ -53,9 +54,11 @@
         };
         hostname = "mx.px.io";
         destination = ["$myhostname" "$mydomain" "localhost" "px.io" "dev.px.io" "peyroux.io" "xn--wxa.email" "4ge.me"];
+        localRecipients = ["alex"];
         relayDomains = ["@px.io" "@dev.px.io" "@peyroux.io" "@xn--wxa.email" "@4ge.me"];
         lookupMX = true;
         virtual = builtins.readFile(../secrets/postfix.virtual);
+        transport = builtins.readFile(../secrets/postfix.transport);
         sslCert = "/var/lib/acme/mx.px.io/cert.pem";
         sslKey = "/var/lib/acme/mx.px.io/key.pem";
       };

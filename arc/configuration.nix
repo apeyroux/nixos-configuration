@@ -60,7 +60,7 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCjI+cLq05P+BVokJa9MCZK3WniQ/0Bl1gTc5NeH4Cu
   networking.defaultGateway = { address = "163.172.21.1"; interface = "br0"; };
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 80 22 443 32400 3005 8324 32469 8081 ];
+  networking.firewall.allowedTCPPorts = [ 80 22 443 32400 3005 8324 32469 8081 8080 28967 ];
   networking.firewall.allowedUDPPorts = [ 1900 5353 32410 32412 32413 32414 ];
   # networking.firewall.allowPing = true;
   # Or disable the firewall altogether.
