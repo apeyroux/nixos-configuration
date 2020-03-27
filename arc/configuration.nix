@@ -5,10 +5,11 @@
     [
       ./hardware-configuration.nix
       ./containers/plex.nix
-      ./containers/gitlab.nix
+      # ./containers/gitlab.nix
       ./containers/transmission.nix
       ./containers/nextcloud.nix
       ./containers/mx.nix
+      ./containers/smtpd.nix
       ./nginx.nix
     ];
 
