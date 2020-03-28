@@ -76,9 +76,9 @@ mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM
           recipient_delimiter = "+";
           message_size_limit = "0";
           mailbox_size_limit = "0";
+          smtpd_sender_login_maps = "hash:/smtpd/smtpd_sender_login_maps";
           smtpd_sasl_auth_enable = "yes";
           smtpd_sasl_authenticated_header = "yes";
-          smtpd_sender_login_maps = "hash:/smtpd/controlled_envelope_senders";
           smtpd_sasl_local_domain = "$myhostname";
           smtp_sasl_mechanism_filter = "plain, login";
           smtpd_error_sleep_time = "1s";
@@ -90,6 +90,10 @@ mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM
             "reject_non_fqdn_hostname"
             "reject_invalid_hostname"
             "permit"
+          ];
+          smtpd_sender_restrictions = [
+            "reject_non_fqdn_sender"
+            "reject_sender_login_mismatch"
           ];
           smtpd_recipient_restrictions = [
             "permit_sasl_authenticated"
@@ -112,8 +116,8 @@ mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM
         localRecipients = ["@px.io"];
         relayDomains = ["@px.io" "@dev.px.io" "@peyroux.io" "@xn--wxa.email" "@4ge.me"];
         # lookupMX = true;
-        # virtual = builtins.readFile(../secrets/postfix.virtual);
-        # transport = builtins.readFile(../secrets/postfix.transport);
+        virtual = builtins.readFile(../secrets/postfix.virtual);
+        transport = builtins.readFile(../secrets/postfix.transport);
         sslCert = "/var/lib/acme/smtp.px.io/cert.pem";
         sslKey = "/var/lib/acme/smtp.px.io/key.pem";
       };
