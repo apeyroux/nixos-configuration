@@ -64,6 +64,8 @@ mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM
         enable = true;
         domains = "csl:px.io,peyroux.io";
         selector = "px";
+        user = "postfix";
+        group = "postfix";
       };
       
       services.postfix = {
@@ -117,7 +119,7 @@ mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM
         relayDomains = ["@px.io" "@dev.px.io" "@peyroux.io" "@xn--wxa.email" "@4ge.me"];
         # lookupMX = true;
         virtual = builtins.readFile(../secrets/postfix.virtual);
-        transport = builtins.readFile(../secrets/postfix.transport);
+        transport = builtins.readFile(../secrets/postfix.smtpd.transport);
         sslCert = "/var/lib/acme/smtp.px.io/cert.pem";
         sslKey = "/var/lib/acme/smtp.px.io/key.pem";
       };
