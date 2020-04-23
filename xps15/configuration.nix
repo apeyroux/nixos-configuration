@@ -1,4 +1,3 @@
-
 { config, pkgs, ... }:
 
 
@@ -18,6 +17,7 @@
 
   networking.hostId = "8cdadb71";
   networking.hostName = "xps15.px.io";
+  networking.firewall.enable = false;
   networking.networkmanager.enable = true; 
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
   networking.hosts = import ./secrets/hosts.nix;
@@ -90,6 +90,7 @@
     udisks2.enable = true;
     upower.enable = true;
     pcscd.enable = true;
+    openssh.enable = true;
     udev.packages = [ pkgs.libu2f-host pkgs.yubikey-personalization ];
     plex = {
       enable = false;
@@ -97,8 +98,8 @@
     };
     # gnome
     # services.xserver.enable = true;
-    # xserver.displayManager.gdm.enable = true;
-    # xserver.desktopManager.gnome3.enable = true;
+    # xserver.displayManager.gdm.enable = false;
+    # xserver.desktopManager.gnome3.enable = false;
   };
 
   krb5 = {
@@ -200,7 +201,7 @@
     xterm.enable = false;
     # xfce.noDesktop = true;
   };
-  # services.xserver.displayManager.slim.enable = true;
+  services.xserver.displayManager.slim.enable = true;
   services.printing.enable = true;
 
   # users.defaultUserShell = pkgs.zsh;
@@ -228,6 +229,7 @@
       enable = true;
       storageDriver = "zfs";
       extraOptions = "--data-root /docker";
+      autoPrune.enable = true;
     };
     virtualbox.host.enable = true;
     virtualbox.host.enableExtensionPack = true;
@@ -270,17 +272,17 @@
     # ];
   };
 
-  nix.buildMachines = [ {
-	  hostName = "arc";
-	  system = "x86_64-linux";
-	  maxJobs = 8;
-	  speedFactor = 2;
-	}] ;
-	nix.distributedBuilds = true;
-  nix.trustedUsers = ["root" "alex"];
-	nix.extraOptions = ''
-		builders-use-substitutes = true
-	'';
+  # nix.buildMachines = [ {
+	#   hostName = "arc";
+	#   system = "x86_64-linux";
+	#   maxJobs = 8;
+	#   speedFactor = 2;
+	# }] ;
+	# nix.distributedBuilds = true;
+  # nix.trustedUsers = ["root" "alex"];
+	# nix.extraOptions = ''
+	# 	builders-use-substitutes = true
+	# '';
 
   nix.gc = {
     automatic = true;
