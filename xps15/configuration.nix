@@ -201,7 +201,7 @@
     xterm.enable = false;
     # xfce.noDesktop = true;
   };
-  services.xserver.displayManager.slim.enable = true;
+  # services.xserver.displayManager.slim.enable = true;
   services.printing.enable = true;
 
   # users.defaultUserShell = pkgs.zsh;
