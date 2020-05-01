@@ -31,6 +31,18 @@
       
       systemd.services.postfix.after = [ "acme-selfsigned-certificates.target" ];
 
+      services.prometheus = {
+        enable = true;
+        exporters = {
+          postfix = {
+            enable = true;
+            systemd.enable = true;
+            showqPath = "/var/lib/postfix/queue/public/showq";
+            user = "root";
+          };
+        };
+      };
+      
       services.fail2ban = {
         enable = true;
         jails = {

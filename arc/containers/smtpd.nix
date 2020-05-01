@@ -1,4 +1,10 @@
-{
+{ config, pkgs, ... }:
+
+let
+  smtpdFile = pkgs.writeText "smtpd.conf" ''
+pwcheck_method: saslauthd
+  '';
+in {
   containers.smtpd = {
     autoStart = true;
     privateNetwork = true;
@@ -11,7 +17,8 @@
     };
 
     config = { config, pkgs, ... }: {
-      networking.firewall.allowedTCPPorts = [ 25 80 ]; # 80 only for acme
+      networking.firewall.enable = true;
+      networking.firewall.allowedTCPPorts = [ 587 80 9154 ]; # 80 only for acme
       networking.firewall.allowPing = true;
       networking.interfaces.eth0.ipv4.addresses = [{address = "51.15.151.173"; prefixLength = 32;}];
       networking.interfaces.eth0.macAddress = "52:54:00:00:cd:41";
@@ -30,6 +37,10 @@
       };
       
       systemd.services.postfix.after = [ "acme-selfsigned-certificates.target" ];
+      systemd.services.postfix.preStart = ''
+      mkdir -p /usr/local/lib/sasl2/
+      ln -sf ${smtpdFile} /usr/local/lib/sasl2/smtpd.conf
+      '';
 
       services.fail2ban = {
         enable = true;
@@ -42,23 +53,72 @@
         };
       };
 
+      services.grafana = {
+        enable = true;
+        domain = "g.px.io";
+        protocol = "http";
+        provision = {
+          enable = true;
+          datasources = [
+            {
+              name = "smtp.px.io";
+              url = "http://smtp.px.io:9090";
+              type = "prometheus";
+            }
+          ];
+        };
+      };
+
+      services.prometheus = {
+        enable = true;
+        exporters = {
+          postfix = {
+            enable = true;
+            systemd.enable = true;
+            systemd.slice = "postfix";
+            showqPath = "/var/lib/postfix/queue/public/showq";
+            user = "root";
+          };
+        };
+        scrapeConfigs = [
+          {
+            job_name = "postfix";
+            scrape_interval = "5s";
+            static_configs = [
+              {
+                targets = [
+                  "mx.px.io:9154"
+                  "mx2.px.io:9154"
+                ];
+                labels = {
+                  alias = "mx.px.io";
+                };
+              }
+              {
+                targets = [
+                  "smtp.px.io:9154"
+                ];
+                labels = {
+                  alias = "smtp.px.io";
+                };
+              }
+            ];
+          }
+        ];
+      };
+      
       services.nginx = {
         enable = true;
         virtualHosts."smtp.px.io" = {
           root = "/var/www/smtp.px.io";
           default = true;
         };
+        virtualHosts."g.px.io" = {
+          locations."/" = {
+            proxyPass = "http://127.0.0.1:3000";
+          };
+        };
       };
-
-      services.saslauthd = {
-        enable = true;
-      };
-
-      environment.etc."sasl2/smtpd.conf".text = ''
-pwcheck_method: auxprop
-auxprop_plugin: sasldb
-mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM
-      '';
 
       services.opendkim = {
         enable = true;
@@ -67,22 +127,45 @@ mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM
         user = "postfix";
         group = "postfix";
       };
-      
+
       services.postfix = {
         enable = true;
+        enableSmtp = true;
+        enableSubmission = true;
+        submissionOptions = {
+          smtpd_client_restrictions = "permit_sasl_authenticated,reject";
+
+          smtpd_tls_cert_file = "/var/lib/acme/smtp.px.io/fullchain.pem";
+          smtpd_tls_key_file = "/var/lib/acme/smtp.px.io/key.pem";
+
+          smtp_tls_cert_file = "/var/lib/acme/smtp.px.io/fullchain.pem";
+          smtp_tls_key_file = "/var/lib/acme/smtp.px.io/key.pem";
+
+          smtpd_tls_loglevel = "1";
+          smtpd_tls_received_header = "yes";
+          smtpd_tls_security_level = "may";
+          smtpd_use_tls = "yes";
+          smtp_use_tls = "yes";
+          
+        };
+        hostname = "smtp.px.io";
+        sslCert = "/var/lib/acme/smtp.px.io/fullchain.pem";
+        sslKey = "/var/lib/acme/smtp.px.io/key.pem";
+        destination = ["$myhostname" "$mydomain" "localhost" "px.io" "dev.px.io" "peyroux.io" "xn--wxa.email" "4ge.me"];
+        localRecipients = ["@px.io"];
+        relayDomains = ["@px.io" "@dev.px.io" "@peyroux.io" "@xn--wxa.email" "@4ge.me"];
+        virtual = builtins.readFile(../secrets/postfix.virtual);
+        transport = builtins.readFile(../secrets/postfix.transport);
         config = {
           inet_interfaces = "all";
-          smtp_use_tls = true;
-          smtpd_tls_auth_only = "yes";
-          smtp_sender_dependent_authentication = "yes";
           recipient_delimiter = "+";
           message_size_limit = "0";
           mailbox_size_limit = "0";
-          smtpd_sender_login_maps = "hash:/smtpd/smtpd_sender_login_maps";
-          smtpd_sasl_auth_enable = "yes";
-          smtpd_sasl_authenticated_header = "yes";
+          smtpd_sender_login_maps = hash:/smtpd/smtpd_sender_login_maps;
+          smtpd_sasl_auth_enable = true;
+          # smtpd_sasl_service = "smtpd";
+          # smtpd_sasl_authenticated_header = true;
           smtpd_sasl_local_domain = "$myhostname";
-          smtp_sasl_mechanism_filter = "plain, login";
           smtpd_error_sleep_time = "1s";
           smtpd_soft_error_limit = "10";
           smtpd_hard_error_limit = "20";
@@ -113,15 +196,6 @@ mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM
             "permit"
           ];
         };
-        hostname = "smtp.px.io";
-        destination = ["$myhostname" "$mydomain" "localhost" "px.io" "dev.px.io" "peyroux.io" "xn--wxa.email" "4ge.me"];
-        localRecipients = ["@px.io"];
-        relayDomains = ["@px.io" "@dev.px.io" "@peyroux.io" "@xn--wxa.email" "@4ge.me"];
-        # lookupMX = true;
-        virtual = builtins.readFile(../secrets/postfix.virtual);
-        transport = builtins.readFile(../secrets/postfix.smtpd.transport);
-        sslCert = "/var/lib/acme/smtp.px.io/cert.pem";
-        sslKey = "/var/lib/acme/smtp.px.io/key.pem";
       };
     };
   };
