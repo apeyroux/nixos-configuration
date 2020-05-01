@@ -106,7 +106,7 @@ in {
           }
         ];
       };
-      
+
       services.nginx = {
         enable = true;
         virtualHosts."smtp.px.io" = {
