@@ -5,10 +5,16 @@
 { config, pkgs, ... }:
 
 let
+
+  vertical = pkgs.writeScriptBin "f" ''
+xrandr -o right
+xinput set-prop "GXTP7386:00 27C6:0113" --type=float "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1
+'';
+
   portrait = pkgs.writeScriptBin "p" ''
 #portrait (left)
 xrandr -o left 
-xinput set-prop "GXTP7386:00 27C6:0113" --type=float "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1 
+xinput set-prop "GXTP7386:00 27C6:0113" --type=float "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
 '';
 
   landscape = pkgs.writeScriptBin "lscape" ''
@@ -32,6 +38,8 @@ in {
     preLVM = true;
   };
 
+  security.sudo.wheelNeedsPassword = false;
+  
   networking.hostName = "micro.px.io"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -42,7 +50,7 @@ in {
   i18n = {
     consoleFont = "Lat2-Terminus16";
     consoleKeyMap = "us";
-    defaultLocale = "en_US.UTF-8";
+    defaultLocale = "fr_FR.UTF-8";
   };
 
   # Set your time zone.
@@ -52,7 +60,7 @@ in {
   # $ nix search wget
   nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [
-    wget vim portrait landscape
+    wget vim portrait landscape vertical
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -80,9 +88,9 @@ in {
   # Enable touchpad support.
   services.xserver.libinput.enable = true;
 
-  # Enable the KDE Desktop Environment.
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.displayManager.gdm.wayland = false;
+  services.xserver.desktopManager.gnome3.enable = true;
 
   krb5 = {
     enable = true;
