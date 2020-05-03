@@ -10,34 +10,24 @@
     ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "rpool/root/nixos";
-      fsType = "zfs";
+    { device = "/dev/disk/by-uuid/39341370-e97a-4d1c-b6ea-ccfa18848106";
+      fsType = "ext4";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/6275-DE6D";
+    { device = "/dev/disk/by-uuid/778C-F858";
       fsType = "vfat";
     };
 
-  fileSystems."/home" =
-    { device = "rpool/root/home";
-      fsType = "zfs";
-    };
-
-  fileSystems."/tmp" =
-    { device = "rpool/root/tmp";
-      fsType = "zfs";
-    };
-
-  swapDevices = [{ device = "/dev/zvol/rpool/swap"; }];
+  swapDevices = [ ];
 
   nix.maxJobs = lib.mkDefault 8;
-  # powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   # High-DPI console
-  # i18n.consoleFont = lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
+  console.font = lib.mkDefault "${pkgs.terminus_font}/share/consolefonts/ter-u28n.psf.gz";
 }

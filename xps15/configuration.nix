@@ -22,11 +22,7 @@
   networking.firewall.enable = false;
   networking.networkmanager.enable = true; 
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
-  # networking.hosts = import ./secrets/hosts.nix;
-
-  #console = {
-  #  keyMap = "fr";
-  #};
+  networking.hosts = import ./secrets/hosts.nix;
 
   i18n = {
     defaultLocale = "fr_FR.UTF-8";
