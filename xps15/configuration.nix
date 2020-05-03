@@ -9,18 +9,20 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.zfs.enableUnstable = true;
-  boot.supportedFilesystems = ["zfs"];
   boot.cleanTmpDir = true;
   boot.tmpOnTmpfs = true;
   boot.kernel.sysctl = { "net.ipv4.ip_forward" = true; };
+  boot.initrd.luks.devices.sroot = {
+    device = "/dev/nvme0n1p2";
+    preLVM = true;
+  };
 
   networking.hostId = "8cdadb71";
   networking.hostName = "xps15.px.io";
   networking.firewall.enable = false;
   networking.networkmanager.enable = true; 
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
-  networking.hosts = import ./secrets/hosts.nix;
+  # networking.hosts = import ./secrets/hosts.nix;
 
   #console = {
   #  keyMap = "fr";
@@ -28,9 +30,8 @@
 
   i18n = {
     defaultLocale = "fr_FR.UTF-8";
-    consoleKeyMap = "fr";
   };
-
+  console.keyMap = "fr";
   time.timeZone = "Europe/Paris";
 
   environment.systemPackages = with pkgs; [
@@ -72,7 +73,7 @@
    enableGhostscriptFonts = true;
    fonts = with pkgs; [
      corefonts inconsolata lato symbola ubuntu_font_family
-     fira-code monoid unifont vistafonts awesome
+     fira-code monoid unifont awesome
    ];
   };
 
@@ -82,8 +83,6 @@
   powerManagement.powertop.enable = true;
   services = {
     gnome3.gnome-keyring.enable = true;
-    zfs.autoSnapshot.enable = true;
-    zfs.autoScrub.enable = true;
     xserver.updateDbusEnvironment = true;
     xserver.libinput.enable = true;
     dbus.socketActivated = true;
@@ -201,7 +200,7 @@
     xterm.enable = false;
     # xfce.noDesktop = true;
   };
-  services.xserver.displayManager.slim.enable = true;
+  # services.xserver.displayManager.slim.enable = true;
   services.printing.enable = true;
 
   # users.defaultUserShell = pkgs.zsh;
@@ -227,8 +226,6 @@
   virtualisation = {
     docker = {
       enable = true;
-      storageDriver = "zfs";
-      extraOptions = "--data-root /docker";
       autoPrune.enable = true;
     };
     virtualbox.host.enable = true;
@@ -236,7 +233,7 @@
     # anbox.enable = true;
   };
 
-  # systemd.services.docker.path = pkgs.lib.mkOverride 10 ((pkgs.lib.getValue pkgs.systemd.services.docker.path) ++ [ pkgs.kmod pkgs.git pkgs.zfs ]);
+  # systemd.services.docker.path = pkgs.lib.mkOverride 10 ((pkgs.lib.getValue pkgs.systemd.services.docker.path) ++ [ pkgs.kmod pkgs.git ]);
   # systemd.services.docker.path = [ pkgs.kmod pkgs.git pkgs.zfs  ];
   systemd.services.docker.path = [ pkgs.kmod pkgs.git ];
   
@@ -260,7 +257,7 @@
   # ];
 
   nix = {
-    useSandbox = true;
+    trustedUsers = ["alex"];
     # binaryCaches = [
     #   "ssh://arc"
     #   "https://cache.nixos.org/"
