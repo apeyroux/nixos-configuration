@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+é{ config, pkgs, ... }:
 
 
 {
@@ -93,8 +93,8 @@
     };
     # gnome
     # services.xserver.enable = true;
-    # xserver.displayManager.gdm.enable = false;
-    # xserver.desktopManager.gnome3.enable = false;
+    xserver.displayManager.gdm.enable = true;
+    xserver.desktopManager.gnome3.enable = true;
   };
 
   krb5 = {
@@ -200,6 +200,16 @@
   services.printing.enable = true;
 
   # users.defaultUserShell = pkgs.zsh;
+  users.users.thybalt= {
+    password = "titi";
+    isNormalUser = true;
+  };
+  
+  users.users.emma= {
+    password = "emma";
+    isNormalUser = true;
+  };
+  
   users.users.alex= {
     password = "alex";
     isNormalUser = true;
