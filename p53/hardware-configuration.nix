@@ -8,7 +8,14 @@
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "sdhci_pci" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci"
+                                         "nvme"
+                                         "usb_storage"
+                                         "sd_mod"
+                                         "sdhci_pci"
+                                         "aes_x86_64"
+                                         "aesni_intel"
+                                         "cryptd" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];

@@ -17,12 +17,15 @@
   boot.tmpOnTmpfs = true;
   boot.kernel.sysctl = { "net.ipv4.ip_forward" = true; };
   boot.kernelParams = ["nouveau.modeset=0"];
-  boot.initrd.luks.devices.sroot = {
-    device = "/dev/nvme0n1p2";
-    preLVM = true;
-    gpgCard = {
-      encryptedPass = "/boot/smart.key";
-      publicKey = "/boot/smart.pub";
+  boot.initrd.luks = {
+    gpgSupport = true;
+    devices.sroot = {
+      device = "/dev/nvme0n1p2";
+      preLVM = true;
+      gpgCard = {
+        encryptedPass = /etc/nixos/luks/sroot.key.gpg;
+        publicKey = /etc/nixos/luks/sroot.pub;
+      };
     };
   };
 
