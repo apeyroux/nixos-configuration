@@ -29,7 +29,7 @@
   networking.hostName = "p53.px.io"; # Define your hostname.
   networking.networkmanager.enable = true;
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
-  networking.hosts = import ./secrets/hosts.nix;
+  # networking.hosts = import ./secrets/hosts.nix;
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.

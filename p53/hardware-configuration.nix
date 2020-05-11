@@ -14,16 +14,18 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/6a8df99b-9784-4dfc-b13c-b0e188cb15b3";
+    { device = "/dev/disk/by-uuid/96a760fe-6460-4563-9902-6d94596bff01";
       fsType = "ext4";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/F611-3D86";
+    { device = "/dev/disk/by-uuid/1A30-3503";
       fsType = "vfat";
     };
 
-  swapDevices = [ ];
+  swapDevices = [
+    { device = "/dev/mapper/NixOS-swap"; }
+  ];
 
   nix.maxJobs = lib.mkDefault 12;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
