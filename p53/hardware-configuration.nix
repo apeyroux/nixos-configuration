@@ -17,8 +17,8 @@
                                          "aesni_intel"
                                          "cryptd" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot.kernelModules = [ "kvm-intel" "acpi_call" "i915" ];
+  boot.extraModulePackages = [ "acpi_call" ];
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/96a760fe-6460-4563-9902-6d94596bff01";

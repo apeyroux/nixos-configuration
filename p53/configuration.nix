@@ -121,11 +121,22 @@
   services.printing.enable = true;
   services.pcscd.enable = true;
   services.gnome3.gnome-keyring.enable = true;
+  services.throttled.enable = lib.mkDefault true;
 
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
-  hardware.opengl.enable = true;
+  services.throttled.enable = lib.mkDefault true;
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.opengl = {
+    enable = true;
+    extraPackages = with pkgs; [
+      vaapiIntel
+      vaapiVdpau
+      libvdpau-va-gl
+      intel-media-driver
+    ];
+  };
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
