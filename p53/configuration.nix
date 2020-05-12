@@ -7,6 +7,7 @@
 {
   imports =
     [ # Include the results of the hardware scan.
+      <nixos-hardware/lenovo/thinkpad/p53>
       ./hardware-configuration.nix
     ];
 
@@ -121,13 +122,11 @@
   services.printing.enable = true;
   services.pcscd.enable = true;
   services.gnome3.gnome-keyring.enable = true;
-  services.throttled.enable = lib.mkDefault true;
 
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
-  services.throttled.enable = lib.mkDefault true;
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  services.throttled.enable = true;
   hardware.opengl = {
     enable = true;
     extraPackages = with pkgs; [
