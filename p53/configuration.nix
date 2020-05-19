@@ -125,7 +125,10 @@
   services.printing.enable = true;
   services.pcscd.enable = true;
   services.gnome3.gnome-keyring.enable = true;
-
+  services.avahi = {
+    enable = false;
+    nssmdns = false;
+  };
   services.restic.backups = {
     home-alex = {
       initialize = true;
