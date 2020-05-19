@@ -30,6 +30,9 @@
     };
   };
 
+  powerManagement.powertop.enable = true;
+  services.tlp.enable = true; 
+
   networking.hostName = "p53.px.io"; # Define your hostname.
   networking.networkmanager.enable = true;
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
