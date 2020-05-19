@@ -126,6 +126,24 @@
   services.pcscd.enable = true;
   services.gnome3.gnome-keyring.enable = true;
 
+  services.restic.backups = {
+    home-alex = {
+      initialize = true;
+      passwordFile = "/home/alex/.restic-password";
+      paths = ["/home/alex"];
+      repository = "sftp:arc:bkp/restic/home-alex";
+      user = "alex";
+    };
+
+    p53-nixos-configuration = {
+      initialize = true;
+      passwordFile = "/home/alex/.restic-password";
+      paths = ["/etc/nixos"];
+      repository = "sftp:arc:bkp/restic/p53-nixos-configuration";
+      user = "root";
+    };
+  };
+  
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
