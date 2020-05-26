@@ -16,6 +16,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.cleanTmpDir = true;
   boot.tmpOnTmpfs = true;
+  boot.loader.grub.trustedBoot.enable = true;
   boot.kernel.sysctl = { "net.ipv4.ip_forward" = true; };
   boot.kernelParams = ["nouveau.modeset=0"];
   boot.initrd.luks = {
@@ -31,7 +32,8 @@
   };
 
   powerManagement.powertop.enable = true;
-  services.tlp.enable = true; 
+  services.tlp.enable = true;
+  services.tcsd.enable = true;
 
   networking.hostName = "p53.px.io"; # Define your hostname.
   networking.networkmanager.enable = true;
