@@ -17,8 +17,23 @@
   boot.cleanTmpDir = true;
   boot.tmpOnTmpfs = true;
   boot.loader.grub.trustedBoot.enable = true;
+  boot.loader.grub.trustedBoot.systemHasTPM = "YES_TPM_is_activated";
   boot.kernel.sysctl = { "net.ipv4.ip_forward" = true; };
   boot.kernelParams = ["nouveau.modeset=0"];
+  boot.initrd.availableKernelModules = [ "xhci_pci"
+                                         "nvme"
+                                         "usb_storage"
+                                         "sd_mod"
+                                         "sdhci_pci"
+                                         "tpm"
+                                         "tpm_infineon"
+                                         "tpm_tis"
+                                         "tpm_crb"
+                                         "aes_x86_64"
+                                         "aesni_intel"
+                                         "cryptd" ];
+  boot.initrd.kernelModules = [ "dm-snapshot" ];
+  boot.kernelModules = [ "kvm-intel" ];
   boot.initrd.luks = {
     gpgSupport = true;
     devices.sroot = {
@@ -125,6 +140,10 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+  services.printing.drivers = [
+    pkgs.cups-kyocera
+    pkgs.cups-kyodialog3
+  ];
   services.pcscd.enable = true;
   services.gnome3.gnome-keyring.enable = true;
   services.avahi = {
