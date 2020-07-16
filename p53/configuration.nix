@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       <nixos-hardware/lenovo/thinkpad/p53>
       ./hardware-configuration.nix
+      ./mysql.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -24,6 +25,7 @@
                                          "nvme"
                                          "usb_storage"
                                          "sd_mod"
+                                         "binfmt_misc"
                                          "sdhci_pci"
                                          "tpm"
                                          "tpm_infineon"
@@ -33,7 +35,7 @@
                                          "aesni_intel"
                                          "cryptd" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
-  boot.kernelModules = [ "kvm-intel" ];
+  boot.kernelModules = [ "kvm-intel" "binfmt_misc" ];
   boot.initrd.luks = {
     gpgSupport = true;
     devices.sroot = {
@@ -50,7 +52,7 @@
   services.tlp.enable = true;
   services.tcsd.enable = true;
 
-  networking.hostName = "p53.px.io"; # Define your hostname.
+  networking.hostName = "p53"; # Define your hostname.
   networking.networkmanager.enable = true;
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
   networking.hosts = import ./secrets/hosts.nix;
