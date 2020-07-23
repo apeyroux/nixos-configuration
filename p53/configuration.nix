@@ -52,6 +52,22 @@
   services.tlp.enable = true;
   services.tcsd.enable = true;
 
+  services.nginx = {
+    enable = true;
+    virtualHosts = {
+      "p53.px.eu.ngrok.io" = {
+        locations."/" = {
+          root = "/var/www/waib";
+        };
+      };
+      "p53.px.io" = {
+        locations."/" = {
+          root = "/var/www/waib";
+        };
+      };
+    };
+  };
+
   networking.hostName = "p53"; # Define your hostname.
   networking.networkmanager.enable = true;
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
@@ -192,9 +208,9 @@
   # Enable touchpad support.
   services.xserver.libinput.enable = true;
 
-  # services.xserver.displayManager.lightdm.enable = true;
+  services.xserver.displayManager.lightdm.enable = true;
   # services.xserver.displayManager.gdm.enable = true;
-  services.xserver.displayManager.gdm.nvidiaWayland = true;
+  # services.xserver.displayManager.gdm.nvidiaWayland = true;
   # services.xserver.displayManager.gdm.wayland = false;
   services.xserver.desktopManager.gnome3.enable = true;
   # services.xserver.displayManager.sddm.enable = true;
