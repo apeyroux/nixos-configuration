@@ -7,7 +7,7 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      <nixos-hardware/lenovo/thinkpad/p53>
+      # <nixos-hardware/lenovo/thinkpad/p53>
       ./hardware-configuration.nix
       ./mysql.nix
     ];
@@ -68,7 +68,7 @@
     };
   };
 
-  networking.hostName = "p53"; # Define your hostname.
+  networking.hostName = "p53.px.io"; # Define your hostname.
   networking.networkmanager.enable = true;
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
   networking.hosts = import ./secrets/hosts.nix;
@@ -86,21 +86,21 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
+  i18n.defaultLocale = "fr_FR.UTF-8";
   console = {
     font = "Lat2-Terminus16";
   };
   console.keyMap = "fr";
 
-  fonts = {
-    enableFontDir = true;
-    enableGhostscriptFonts = true;
-    fontconfig.dpi = 96;
-    fonts = with pkgs; [
-      corefonts inconsolata lato symbola ubuntu_font_family
-      fira-code monoid unifont awesome
-    ];
-  };
+  # fonts = {
+  #   enableFontDir = true;
+  #   enableGhostscriptFonts = true;
+  #   fontconfig.dpi = 96;
+  #   fonts = with pkgs; [
+  #     corefonts inconsolata lato symbola ubuntu_font_family
+  #     fira-code monoid unifont awesome
+  #   ];
+  # };
 
   # Set your time zone.
   time.timeZone = "Europe/Paris";
@@ -276,6 +276,7 @@
   nix = {
     trustedUsers = ["alex"];
   };
+
   
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
