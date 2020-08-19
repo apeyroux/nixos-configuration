@@ -6,6 +6,7 @@
 
 {
   imports =
+<<<<<<< HEAD
     [
       # nixos-hardware:
       # $ sudo nix-channel --add https://github.com/NixOS/nixos-hardware/archive/master.tar.gz nixos-hardware
@@ -14,6 +15,10 @@
       <nixos-hardware/lenovo/thinkpad/p53>
 
       # Include the results of the hardware scan.
+=======
+    [ # Include the results of the hardware scan.
+      # <nixos-hardware/lenovo/thinkpad/p53>
+>>>>>>> aa789420e4dbe39875db469601f6f576d375b240
       ./hardware-configuration.nix
       # ./mysql.nix
     ];
