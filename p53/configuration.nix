@@ -6,8 +6,14 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
-      # <nixos-hardware/lenovo/thinkpad/p53>
+    [
+      # nixos-hardware:
+      # $ sudo nix-channel --add https://github.com/NixOS/nixos-hardware/archive/master.tar.gz nixos-hardware
+      # $ sudo nix-channel --update
+      #
+      <nixos-hardware/lenovo/thinkpad/p53>
+
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
       # ./mysql.nix
     ];
@@ -35,7 +41,7 @@
                                          "aesni_intel"
                                          "cryptd" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
-  boot.kernelModules = [ "kvm-intel" "binfmt_misc" ];
+  boot.kernelModules = [ "kvm-intel" "binfmt_misc" "tpm" ];
   boot.initrd.luks = {
     gpgSupport = true;
     devices.sroot = {
@@ -52,6 +58,8 @@
   services.tlp.enable = true;
   services.tcsd.enable = true;
 
+  services.fwupd.enable = true;
+  
   services.nginx = {
     enable = true;
     virtualHosts = {
