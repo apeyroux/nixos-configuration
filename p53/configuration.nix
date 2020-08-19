@@ -59,6 +59,7 @@
   services.tcsd.enable = true;
 
   services.fwupd.enable = true;
+  services.fwupd.enableTestRemote = true;
   
   services.nginx = {
     enable = true;
