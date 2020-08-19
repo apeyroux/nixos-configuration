@@ -7,9 +7,9 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      <nixos-hardware/lenovo/thinkpad/p53>
+      # <nixos-hardware/lenovo/thinkpad/p53>
       ./hardware-configuration.nix
-      ./mysql.nix
+      # ./mysql.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -18,7 +18,7 @@
   boot.cleanTmpDir = true;
   boot.tmpOnTmpfs = true;
   boot.loader.grub.trustedBoot.enable = true;
-  boot.loader.grub.trustedBoot.systemHasTPM = "YES_TPM_is_activated";
+  # boot.loader.grub.trustedBoot.systemHasTPM = "YES_TPM_is_activated";
   boot.kernel.sysctl = { "net.ipv4.ip_forward" = true; };
   boot.kernelParams = ["nouveau.modeset=0"];
   boot.initrd.availableKernelModules = [ "xhci_pci"
@@ -41,10 +41,10 @@
     devices.sroot = {
       device = "/dev/nvme0n1p2";
       preLVM = true;
-      gpgCard = {
-        encryptedPass = /etc/nixos/luks/sroot.key.gpg;
-        publicKey = /etc/nixos/luks/sroot.pub;
-      };
+      # gpgCard = {
+      #  encryptedPass = /etc/nixos/luks/sroot.key.gpg;
+      #  publicKey = /etc/nixos/luks/sroot.pub;
+      # };
     };
   };
 
@@ -68,10 +68,10 @@
     };
   };
 
-  networking.hostName = "p53"; # Define your hostname.
+  networking.hostName = "p53.px.io"; # Define your hostname.
   networking.networkmanager.enable = true;
   networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
-  networking.hosts = import ./secrets/hosts.nix;
+  # networking.hosts = import ./secrets/hosts.nix;
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -86,21 +86,21 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
+  i18n.defaultLocale = "fr_FR.UTF-8";
   console = {
     font = "Lat2-Terminus16";
   };
   console.keyMap = "fr";
 
-  fonts = {
-    enableFontDir = true;
-    enableGhostscriptFonts = true;
-    fontconfig.dpi = 96;
-    fonts = with pkgs; [
-      corefonts inconsolata lato symbola ubuntu_font_family
-      fira-code monoid unifont awesome
-    ];
-  };
+  # fonts = {
+  #   enableFontDir = true;
+  #   enableGhostscriptFonts = true;
+  #   fontconfig.dpi = 96;
+  #   fonts = with pkgs; [
+  #     corefonts inconsolata lato symbola ubuntu_font_family
+  #     fira-code monoid unifont awesome
+  #   ];
+  # };
 
   # Set your time zone.
   time.timeZone = "Europe/Paris";
@@ -276,6 +276,7 @@
   nix = {
     trustedUsers = ["alex"];
   };
+
   
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
