@@ -1,10 +1,11 @@
-é{ config, pkgs, ... }:
+{ config, pkgs, ... }:
 
 
 {
   imports =
     [
       ./hardware-configuration.nix
+      <nixos-hardware/dell/xps/15-9550>
     ];
 
   boot.loader.systemd-boot.enable = true;
@@ -64,14 +65,14 @@
 #   '';
   };
 
-  fonts = {
-   enableFontDir          = true;
-   enableGhostscriptFonts = true;
-   fonts = with pkgs; [
-     corefonts inconsolata lato symbola ubuntu_font_family
-     fira-code monoid unifont awesome
-   ];
-  };
+  # fonts = {
+  #  enableFontDir          = true;
+  #  enableGhostscriptFonts = true;
+  #  fonts = with pkgs; [
+  #    corefonts inconsolata lato symbola ubuntu_font_family
+  #    fira-code monoid unifont awesome
+  #  ];
+  # };
 
   sound.enable = true;
   sound.mediaKeys.enable = true;
@@ -163,6 +164,12 @@
     { x = 2880; y = 1620; }
   ];
 
+  hardware.nvidia.modesetting.enable = true;
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia.optimus_prime.enable = true;
+  hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
+  hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
+  
   # xmonad
   services.xserver.windowManager = {
     xmonad.extraPackages = p: [
