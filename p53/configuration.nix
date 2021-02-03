@@ -5,87 +5,22 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [
-      # nixos-hardware:
-      # $ sudo nix-channel --add https://github.com/NixOS/nixos-hardware/archive/master.tar.gz nixos-hardware
-      # $ sudo nix-channel --update
-      #
-      <nixos-hardware/lenovo/thinkpad/p53>
-
-      # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      # ./mysql.nix
-    ];
+  imports = [ # Include the results of the hardware scan.
+    <nixos-hardware/lenovo/thinkpad/p53>
+    ./hardware-configuration.nix
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.cleanTmpDir = true;
-  boot.tmpOnTmpfs = true;
-  boot.loader.grub.trustedBoot.enable = true;
-  # boot.loader.grub.trustedBoot.systemHasTPM = "YES_TPM_is_activated";
-  boot.kernel.sysctl = { "net.ipv4.ip_forward" = true; };
-  boot.kernelParams = ["nouveau.modeset=0"];
-  boot.initrd.availableKernelModules = [ "xhci_pci"
-                                         "nvme"
-                                         "usb_storage"
-                                         "sd_mod"
-                                         "binfmt_misc"
-                                         "sdhci_pci"
-                                         "tpm"
-                                         "tpm_infineon"
-                                         "tpm_tis"
-                                         "tpm_crb"
-                                         "aes_x86_64"
-                                         "aesni_intel"
-                                         "cryptd" ];
-  boot.initrd.kernelModules = [ "dm-snapshot" ];
-  boot.kernelModules = [ "kvm-intel" "binfmt_misc" "tpm" ];
-  boot.initrd.luks = {
-    gpgSupport = true;
-    devices.sroot = {
-      device = "/dev/nvme0n1p2";
-      preLVM = true;
-      # gpgCard = {
-      #  encryptedPass = /etc/nixos/luks/sroot.key.gpg;
-      #  publicKey = /etc/nixos/luks/sroot.pub;
-      # };
-    };
-  };
 
-  powerManagement.powertop.enable = true;
-  services.tlp.enable = true;
-  services.tcsd.enable = true;
-
-  services.fwupd.enable = true;
-  services.fwupd.enableTestRemote = true;
-  
-  services.nginx = {
-    enable = true;
-    virtualHosts = {
-      "p53.px.eu.ngrok.io" = {
-        locations."/" = {
-          root = "/var/www/waib";
-        };
-      };
-      "p53.px.io" = {
-        locations."/" = {
-          root = "/var/www/waib";
-        };
-      };
-    };
-  };
-
-  networking.hostName = "p53.px.io"; # Define your hostname.
-  networking.networkmanager.enable = true;
-  networking.nameservers = ["8.8.8.8" "4.4.4.4" "1.1.1.1" "1.0.0.1"];
-  networking.extraHosts =
-  ''
-  '';
-  # networking.hosts = import ./secrets/hosts.nix;
+  networking.hostId = "8cdadb71";
+  networking.hostName = "p35"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  
+
+  # Set your time zone.
+  time.timeZone = "Europe/Paris";
+
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
@@ -101,52 +36,110 @@
   i18n.defaultLocale = "fr_FR.UTF-8";
   console = {
     font = "Lat2-Terminus16";
+    keyMap = "fr";
   };
-  console.keyMap = "fr";
 
-  # fonts = {
-  #   enableFontDir = true;
-  #   enableGhostscriptFonts = true;
-  #   fontconfig.dpi = 96;
-  #   fonts = with pkgs; [
-  #     corefonts inconsolata lato symbola ubuntu_font_family
-  #     fira-code monoid unifont awesome
-  #   ];
-  # };
+  # Enable the GNOME 3 Desktop Environment.
+  services.xserver.enable = true;
+  # services.xserver.displayManager.gdm.enable = true;
+  services.xserver.displayManager.gdm.nvidiaWayland = true;
+  services.xserver.desktopManager.gnome3.enable = true;
 
-  # Set your time zone.
-  time.timeZone = "Europe/Paris";
+  hardware.nvidia.modesetting.enable = true;
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia.prime.sync.enable = true;
+  hardware.nvidia.prime.nvidiaBusId = "PCI:1:0:0";
+  hardware.nvidia.prime.intelBusId = "PCI:0:2:0";
 
-  krb5 = {
-    enable = true;
-    realms = {
-      "KRB.LAN" = {
-        kdc = "127.0.0.1";
-        admin_server = "127.0.0.1";
-        default_domain = "KRB.LAN";
+  hardware.opengl.driSupport32Bit = true; # pour docker nvidia
+
+  services.xserver = {
+    xautolock = {
+      enable = true;
+      time = 5;
+      killtime = 20;
+      killer = "/run/current-system/systemd/bin/systemctl suspend";
+      locker = "${pkgs.i3lock}/bin/i3lock";
+    };
+    windowManager = {
+      xmonad = {
+        extraPackages = p: [
+          p.xmonad
+          # p.taffybar
+          p.xmobar
+          p.xmonad-extras
+          p.xmonad-contrib
+          p.xmonad-volume
+          p.xmonad-utils
+          p.xmonad-screenshot
+          p.xmonad-wallpaper
+          p.xmonad-spotify
+        ];
+        enable = true;
+        enableContribAndExtras = true;
       };
     };
-    libdefaults.default_realm = "KRB.LAN";
-    libdefaults.dns_lookup_kdc   = "no";
-    libdefaults.dns_lookup_realm = "no";
-    # The following krb5.conf variables are only for MIT Kerberos.
-	  libdefaults.krb4_config = "/etc/krb.conf";
-	  libdefaults.krb4_realms = "/etc/krb.realms";
-	  libdefaults.kdc_timesync = "1";
-	  libdefaults.ccache_type = "4";
-	  libdefaults.forwardable = true;
-	  libdefaults.proxiable = true;
+  };
 
-    domain_realm = {
-      ".krb.lan" = "KRB.LAN";
+  # Configure keymap in X11
+  services.xserver.layout = "fr";
+  services.xserver.xkbOptions = "eurosign:e";
+
+  # Enable CUPS to print documents.
+  services.printing.enable = true;
+
+  # Enable sound.
+  # sound.enable = true;
+  hardware.pulseaudio.enable = true;
+
+  # Enable touchpad support (enabled default in most desktopManager).
+  services.xserver.libinput.enable = true;
+
+  # Monitor plug n play
+  # https://github.com/phillipberndt/autorandr/blob/v1.0/README.md#how-to-use
+  services.autorandr.enable = true;
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # users.users.jane = {
+  #   isNormalUser = true;
+  #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+  # };
+  security.sudo.wheelNeedsPassword = false;
+  users.users.alex = {
+    password = "alex";
+    isNormalUser = true;
+    extraGroups = [
+      "adbusers"
+      "audio"
+      "cdrom"
+      "dialout"
+      "disks"
+      "docker"
+      "fuse"
+      "networkmanager"
+      "root"
+      "sibi"
+      "vboxusers"
+      "video"
+      "wheel"
+      "wireshark"
+    ];
+  };
+
+  virtualisation = {
+    docker = {
+      enable = true;
+      storageDriver = "zfs";
+      enableNvidia = true;
     };
+    virtualbox.host.enable = true;
+    virtualbox.host.enableExtensionPack = true;
+    # anbox.enable = true;
   };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  # environment.systemPackages = with pkgs; [
-  #   wget vim
-  # ];
+  environment.systemPackages = with pkgs; [ gnomeExtensions.dash-to-dock ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -154,7 +147,6 @@
   programs.gnupg.agent = {
     enable = true;
     enableSSHSupport = true;
-    pinentryFlavor = "gnome3";
   };
 
   # List services that you want to enable:
@@ -166,136 +158,17 @@
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  networking.firewall.enable = false;
+  # networking.firewall.enable = false;
 
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-  services.printing.drivers = [
-    pkgs.cups-kyocera
-    pkgs.cups-kyodialog3
-  ];
-  services.pcscd.enable = true;
-  services.gnome3.gnome-keyring.enable = true;
-  services.avahi = {
-    enable = false;
-    nssmdns = false;
-  };
-  services.restic.backups = {
-    home-alex = {
-      initialize = true;
-      passwordFile = "/home/alex/.restic-password";
-      paths = ["/home/alex"];
-      repository = "sftp:arc:bkp/restic/home-alex";
-      user = "alex";
-    };
-
-    p53-nixos-configuration = {
-      initialize = true;
-      passwordFile = "/home/alex/.restic-password";
-      paths = ["/etc/nixos"];
-      repository = "sftp:arc:bkp/restic/p53-nixos-configuration";
-      user = "root";
-    };
-  };
-  
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
-  services.throttled.enable = true;
-  hardware.opengl = {
-    enable = true;
-    extraPackages = with pkgs; [
-      vaapiIntel
-      vaapiVdpau
-      libvdpau-va-gl
-      intel-media-driver
-    ];
-  };
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.layout = "fr";
-  services.xserver.xkbOptions = "eurosign:e";
-
-  # Enable touchpad support.
-  services.xserver.libinput.enable = true;
-
-  services.xserver.displayManager.lightdm.enable = true;
-  # services.xserver.displayManager.gdm.enable = true;
-  # services.xserver.displayManager.gdm.nvidiaWayland = true;
-  # services.xserver.displayManager.gdm.wayland = false;
-  services.xserver.desktopManager.gnome3.enable = true;
-  # services.xserver.displayManager.sddm.enable = true;
-  # services.xserver.desktopManager.plasma5.enable = true;
-  hardware.nvidia.modesetting.enable = true;
-  services.xserver.videoDrivers = [ "nvidia" ];
-  hardware.nvidia.optimus_prime.enable = true;
-  hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
-  hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
-
-  services.xserver.windowManager = {
-    xmonad.extraPackages = p: [
-      p.xmonad
-      # p.taffybar
-      p.xmobar
-      p.xmonad-extras
-      p.xmonad-contrib
-      p.xmonad-volume
-      p.xmonad-utils
-      p.xmonad-screenshot
-      p.xmonad-wallpaper
-      p.xmonad-spotify
-    ];
-    xmonad.enable = true;
-    xmonad.enableContribAndExtras = true;
-  };
-
-  security.sudo.wheelNeedsPassword = false;
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.alex = {
-    isNormalUser = true;
-    password = "alex";
-    extraGroups = ["wheel"
-                   "adbusers"
-                   "root"
-                   "sibi"
-                   "disks"
-                   "dialout"
-                   "wireshark"
-                   "audio"
-                   "video"
-                   "cdrom"
-                   "fuse"
-                   "networkmanager"
-                   "vboxusers"
-                   "docker"];
-  };
-
-  systemd.services.docker.path = [ pkgs.kmod pkgs.git ];
-  virtualisation = {
-    docker = {
-      enable = true;
-      autoPrune.enable = true;
-    };
-    virtualbox.host.enable = true;
-    virtualbox.host.enableExtensionPack = true;
-    # anbox.enable = true;
-  };
-  
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.android_sdk.accept_license = true;
-
-  nix = {
-    trustedUsers = ["alex"];
-  };
-
-  
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.03"; # Did you read the comment?
+
+  nixpkgs.config.allowUnfree = true;
+  system.stateVersion = "20.09"; # Did you read the comment?
 
 }
+
