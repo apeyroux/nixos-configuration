@@ -15,7 +15,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostId = "8cdadb71";
-  networking.hostName = "p35"; # Define your hostname.
+  networking.hostName = "p53"; # Define your hostname.
+  networking.hosts = import ./secrets/hosts.nix;
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Set your time zone.
