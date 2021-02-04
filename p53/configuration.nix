@@ -13,10 +13,12 @@
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernel.sysctl = { "net.ipv4.ip_forward" = true; };
 
   networking.hostId = "8cdadb71";
   networking.hostName = "p53"; # Define your hostname.
   networking.hosts = import ./secrets/hosts.nix;
+  networking.firewall.enable = false;
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Set your time zone.
