@@ -39,7 +39,7 @@
     font = "Lat2-Terminus16";
     keyMap = "fr";
   };
-
+  
   # Enable the GNOME 3 Desktop Environment.
   services.xserver.enable = true;
   # services.xserver.displayManager.gdm.enable = true;
@@ -99,6 +99,19 @@
   # Monitor plug n play
   # https://github.com/phillipberndt/autorandr/blob/v1.0/README.md#how-to-use
   services.autorandr.enable = true;
+
+
+  #
+  # gpg --export alex@mymail.xxx | base64 /tmp/alex.asc
+  # VAULT_ADDR=http://127.0.0.1:8200/ vault operator init -pgp-keys="/home/alex/alex.asc" -key-shares=1 -key-threshold=1
+  # (create key.b64 with init --gpg-key result cmd)
+  # export VAULT_TOKEN=s.f3oxxxxxxxx
+  # cat key.b64 | base64 -d | gpg -dq
+  # VAULT_ADDR=http://127.0.0.1:8200/ vault operator unseal
+  services.vault = {
+    enable = true;
+    storageBackend = "file";
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   # users.users.jane = {
