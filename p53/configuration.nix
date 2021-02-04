@@ -39,6 +39,31 @@
     font = "Lat2-Terminus16";
     keyMap = "fr";
   };
+
+  krb5 = {
+    enable = true;
+    realms = {
+      "KRB.LAN" = {
+        kdc = "127.0.0.1";
+        admin_server = "127.0.0.1";
+        default_domain = "KRB.LAN";
+      };
+    };
+    libdefaults.default_realm = "KRB.LAN";
+    libdefaults.dns_lookup_kdc   = "no";
+    libdefaults.dns_lookup_realm = "no";
+    # The following krb5.conf variables are only for MIT Kerberos.
+	  libdefaults.krb4_config = "/etc/krb.conf";
+	  libdefaults.krb4_realms = "/etc/krb.realms";
+	  libdefaults.kdc_timesync = "1";
+	  libdefaults.ccache_type = "4";
+	  libdefaults.forwardable = true;
+	  libdefaults.proxiable = true;
+
+    domain_realm = {
+      ".krb.lan" = "KRB.LAN";
+    };
+  };
   
   # Enable the GNOME 3 Desktop Environment.
   services.xserver.enable = true;
