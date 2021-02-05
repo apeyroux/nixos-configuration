@@ -70,7 +70,7 @@
   # Enable the GNOME 3 Desktop Environment.
   services.xserver.enable = true;
   # services.xserver.displayManager.gdm.enable = true;
-  services.xserver.displayManager.gdm.nvidiaWayland = true;
+  # services.xserver.displayManager.gdm.nvidiaWayland = true;
   services.xserver.desktopManager.gnome3.enable = true;
 
   hardware.nvidia.modesetting.enable = true;
@@ -83,7 +83,7 @@
 
   services.xserver = {
     xautolock = {
-      enable = true;
+      enable = false;
       time = 5;
       killtime = 20;
       killer = "/run/current-system/systemd/bin/systemctl suspend";
@@ -115,6 +115,8 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+
+  services.zfs.autoSnapshot.enable = true;
 
   # Enable sound.
   # sound.enable = true;

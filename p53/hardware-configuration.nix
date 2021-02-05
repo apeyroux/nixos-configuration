@@ -28,6 +28,11 @@
       fsType = "zfs";
     };
 
+  fileSystems."/var/lib/docker" =
+    { device = "rpool/docker";
+      fsType = "zfs";
+    };
+  
   fileSystems."/tmp" =
     { device = "rpool/tmp";
       fsType = "zfs";
