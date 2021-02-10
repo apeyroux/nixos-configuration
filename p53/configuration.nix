@@ -170,7 +170,14 @@
       "wireshark"
     ];
   };
-  
+
+  # if docker zfs in hardware.nix:
+  # systemd.services.docker.after = ["var-lib-docker.mount"];
+  # fileSystems."/var/lib/docker" =
+  # { device = "rpool/docker";
+  #   fsType = "zfs";
+  # };
+
   virtualisation = {
     docker = {
       enable = true;
