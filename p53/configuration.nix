@@ -19,6 +19,7 @@
   networking.hostName = "p53"; # Define your hostname.
   networking.hosts = import ./secrets/hosts.nix;
   networking.firewall.enable = false;
+  networking.networkmanager.enable = true;
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Set your time zone.
@@ -71,7 +72,9 @@
   services.xserver.enable = true;
   # services.xserver.displayManager.gdm.enable = true;
   # services.xserver.displayManager.gdm.nvidiaWayland = true;
-  services.xserver.desktopManager.gnome3.enable = true;
+  # services.xserver.desktopManager.gnome3.enable = true;
+  # services.xserver.displayManager.startx.enable = true;
+  services.xserver.displayManager.lightdm.enable = true;
 
   hardware.nvidia.modesetting.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -128,7 +131,6 @@
   # Monitor plug n play
   # https://github.com/phillipberndt/autorandr/blob/v1.0/README.md#how-to-use
   services.autorandr.enable = true;
-
 
   #
   # gpg --export alex@mymail.xxx | base64 /tmp/alex.asc
