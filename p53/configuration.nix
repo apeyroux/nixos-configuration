@@ -170,7 +170,7 @@
       "wireshark"
     ];
   };
-
+  
   virtualisation = {
     docker = {
       enable = true;

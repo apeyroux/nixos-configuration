@@ -28,6 +28,7 @@
       fsType = "zfs";
     };
 
+  systemd.services.docker.after = ["var-lib-docker.mount"];
   fileSystems."/var/lib/docker" =
     { device = "rpool/docker";
       fsType = "zfs";
