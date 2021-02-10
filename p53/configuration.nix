@@ -76,6 +76,8 @@
   # services.xserver.displayManager.startx.enable = true;
   services.xserver.displayManager.lightdm.enable = true;
 
+  services.logind.lidSwitch = "ignore";
+  
   hardware.nvidia.modesetting.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia.prime.sync.enable = true;
