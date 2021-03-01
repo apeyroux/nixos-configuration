@@ -114,6 +114,17 @@
     };
   };
 
+  fonts.fonts = with pkgs; [
+    roboto
+    roboto-mono
+    fira
+    fira-mono
+    fira-code
+    fira-code-symbols
+    font-awesome
+    font-awesome-ttf
+  ];
+  
   # Configure keymap in X11
   services.xserver.layout = "fr";
   services.xserver.xkbOptions = "eurosign:e";
