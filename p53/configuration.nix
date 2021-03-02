@@ -133,6 +133,7 @@
   services.printing.enable = true;
 
   services.zfs.autoSnapshot.enable = true;
+  services.pcscd.enable = true;
 
   # Enable sound.
   # sound.enable = true;
