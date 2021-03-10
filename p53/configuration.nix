@@ -17,6 +17,7 @@
 
   networking.hostId = "8cdadb71";
   networking.hostName = "p53"; # Define your hostname.
+  networking.domain = "px.io";
   networking.hosts = import ./secrets/hosts.nix;
   networking.firewall.enable = false;
   networking.networkmanager.enable = true;
