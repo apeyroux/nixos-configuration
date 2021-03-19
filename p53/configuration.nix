@@ -166,7 +166,7 @@
   # };
   security.sudo.wheelNeedsPassword = false;
   users.users.alex = {
-    password = "alex";
+    hashedPassword = "$6$KjQCNodPNdbgAuvk$U2iGkgg9uZWum7lKWabsxljElXhS5BffzaFprbj66eKft.EA31KchHWE8j9jHnteFt.jOMqNTqQCR.QAVlwD10";
     isNormalUser = true;
     extraGroups = [
       "adbusers"
@@ -194,6 +194,9 @@
   # };
 
   virtualisation = {
+    podman = {
+      enable = true;
+    };
     docker = {
       enable = true;
       storageDriver = "zfs";
