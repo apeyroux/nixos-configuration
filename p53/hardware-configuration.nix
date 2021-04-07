@@ -8,34 +8,33 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "sdhci_pci" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "sdhci_pci" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "rpool/nixos";
+    { device = "rpool/root/nixos";
+      fsType = "zfs";
+    };
+
+  fileSystems."/home" =
+    { device = "rpool/root/home";
+      fsType = "zfs";
+    };
+
+  fileSystems."/tmp" =
+    { device = "rpool/root/tmp";
       fsType = "zfs";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/0D41-7497";
+    { device = "/dev/disk/by-uuid/CE2E-9C3C";
       fsType = "vfat";
     };
 
-  fileSystems."/home" =
-    { device = "rpool/home";
-      fsType = "zfs";
-    };
-
-  systemd.services.docker.after = ["var-lib-docker.mount"];
   fileSystems."/var/lib/docker" =
     { device = "rpool/docker";
-      fsType = "zfs";
-    };
-  
-  fileSystems."/tmp" =
-    { device = "rpool/tmp";
       fsType = "zfs";
     };
 
